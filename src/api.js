@@ -1,10 +1,3 @@
-export function fetchPokemon(id) {
-   return  fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(res => res.json);
-}
-
-export function suspensify(promise) {
-    let status = "pending";
-    let result;
 import sleep from "sleep-promise";
 
 export function fetchPokemon(id) {
@@ -16,8 +9,13 @@ export function fetchPokemon(id) {
 export function fetchPokemonCollection() {
   return fetch(`https://pokeapi.co/api/v2/pokemon`)
     .then(res => res.json())
-    .then(res => ({...res, results: res.results.map(pokemon => ({...pokemon,
-     id: pokemon.url.split("/")[6]}))}))
+    .then(res => ({
+      ...res,
+      results: res.results.map(pokemon => ({
+        ...pokemon,
+        id: pokemon.url.split("/")[6]
+      }))
+    }))
     .then(sleep(2000));
 }
 
@@ -48,29 +46,4 @@ export function suspensify(promise) {
       }
     }
   };
-}
-
-   let suspender = promise.then(
-       response => {
-           status = "success";
-           result = response;
-           },
-           error => {
-               status = "error";
-               result = error;
-           }
-   )
-
-   return {
-       read() {
-           if(status === "pending") {
-               throw suspender;
-           
-           } else if(status === "success") {
-               return result;
-           } else {
-               throw result;
-           }
-       }
-   }
 }
