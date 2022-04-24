@@ -1,28 +1,26 @@
 import React from "react";
 import ErrorBoundary from "./error-boundary";
 import { fetchPokemon, fetchPokemonCollection, suspensify } from "./api";
+import {List} from "./ui";
 
 const PokemonDetail = React.lazy(() => import("./pokemon-detail"));
 
 let initialPokemon = suspensify(fetchPokemon(1));
 let initialCollection = suspensify(fetchPokemonCollection());
 
-function PokemonCollection({ onClick }) {
-  return (
-    <div>
-      {initialCollection.read().results.map(pokemon => (
-        <li key={pokemon.name}>
-          <button
-            type="button"
-            onClick={() => onClick(pokemon.id)}
-          >
-            {pokemon.name}
-          </button>
-        </li>
-      ))}
-    </div>
-  );
+// render prop
+// as {component} prop
+// object default values
+// spread props in jsx
+
+
+//refactoring
+function PokemonCollection(props) {
+  return <List items={initialCollection.read().results} {...props} />
 }
+
+
+
 
 export default function App() {
   let [pokemon, setPokemon] = React.useState(initialPokemon);
@@ -40,6 +38,7 @@ export default function App() {
         <React.Suspense fallback={<div>Fetching Pokemon...</div>}>
           <ErrorBoundary fallback={"Couldn't catch 'em all."}>
             <PokemonDetail
+              as="ul"
               resource={deferredPokemon}
               isStale={deferredPokemonIsStale}
             />
@@ -62,12 +61,21 @@ export default function App() {
 
         <React.Suspense fallback={<div>Fetching the Database...</div>}>
           <ErrorBoundary fallback={"Couldn't catch 'em all."}>
+           
             <PokemonCollection
-              onClick={id =>
-                startTransition(() => setPokemon(suspensify(fetchPokemon(id))))
-              }
+           as="ul" 
+      renderItem={pokemon => (
+        <li key={pokemon.name}>
+          <button type="button" onClick={() => startTransition(() => 
+           setPokemon(suspensify(fetchPokemon(pokemon.id))))}>
+            {pokemon.name}
+          </button>
+        </li>
+      )}
             />
+            
           </ErrorBoundary>
+          
         </React.Suspense>
       </React.SuspenseList>
     </div>
