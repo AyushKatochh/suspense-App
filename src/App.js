@@ -25,7 +25,7 @@ function PokemonCollection(props) {
 export default function App() {
   let [pokemon, setPokemon] = React.useState(initialPokemon);
   let deferredPokemon = React.useDeferredValue(pokemon, {
-    timeoutMs: 3000
+    timeoutMs: 8000
   });
   let deferredPokemonIsStale = deferredPokemon !== pokemon;
   let [isPending, startTransition] = React.useTransition();
